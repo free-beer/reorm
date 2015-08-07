@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["peter.wood@longboat.com"]
   spec.summary       = %q{A library for use with the RethinkDB application.}
   spec.description   = %q{A library the wraps RQL and provides a basic model class for the RethinkDB system.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/free-beer/reorm"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
