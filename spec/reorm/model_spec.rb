@@ -63,7 +63,27 @@ class SaveTestModel < Reorm::Model
 	end
 end
 
+class SetterTestModel < Reorm::Model
+  def initialize(properties={})
+    super
+  end
+  attr_reader :called
+
+  def value=(setting)
+    @called = true
+    self[:value] = setting
+  end
+end
+
 describe Reorm::Model do
+  describe "#initialize()" do
+    it "invokes an explicit property setter if one is defined" do
+      object = SetterTestModel.new(value: 234)
+      expect(object.called).to eq(true)
+      expect(object.value).to eq(234)
+    end
+  end
+
 	describe "#valid?()" do
 		subject {
 			ValidationTestModel.new

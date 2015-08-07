@@ -17,7 +17,7 @@ module Reorm
       @properties = {}
       properties.each do |key, value|
         if self.respond_to?(setter_name(key))
-          self.send(setter_name(key, value))
+          self.send(setter_name(key), value)
         else
           @properties[key.to_sym] = value
         end
