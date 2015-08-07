@@ -1,0 +1,11 @@
+defaults: &defaults
+  host: localhost
+  port: 28015
+
+development:
+  <<: *defaults
+  db: reorm_dev
+
+test:
+  <<: *defaults
+  db: reorm_test
