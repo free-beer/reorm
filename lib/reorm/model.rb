@@ -16,7 +16,11 @@ module Reorm
     def initialize(properties={})
       @properties = {}
       properties.each do |key, value|
-        @properties[key.to_sym] = value
+        if self.respond_to?(setter_name(key))
+          self.send(setter_name(key, value))
+        else
+          @properties[key.to_sym] = value
+        end
       end
       @errors     = PropertyErrors.new
     end
@@ -120,6 +124,10 @@ module Reorm
 
     def property_name(name)
       name.to_s[-1,1] == "=" ? name.to_s[0...-1].to_sym : name
+    end
+
+    def setter_name(name)
+      "#{name}=".to_sym
     end
 
     def ensure_table_exists(connection)
