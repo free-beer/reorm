@@ -41,13 +41,21 @@ module Reorm
           break
         else
           if index == @path.length - 1
-            result = [value[field], true]
+            result = [value_from_object(field, value), true]
           else
-            value = value[field]
+            value = value_from_object(field, value)
           end
         end
       end
       result
+    end
+
+    def value_from_object(value, object)
+      if object.respond_to?(value)
+        object.send(value)
+      else
+        object[value]
+      end
     end
   end
 end

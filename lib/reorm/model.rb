@@ -36,6 +36,10 @@ module Reorm
       self
     end
 
+    def include?(field)
+      @properties.include?(property_name(field))
+    end
+
     def save(validated=true)
       if validated && !valid?
         raise Error, "Validation error encountered saving an instance of the #{self.class.name} class."

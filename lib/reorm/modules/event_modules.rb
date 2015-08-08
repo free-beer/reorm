@@ -72,7 +72,7 @@ module Reorm
           events.each do |event|
             if handlers.include?(event)
               handlers[event].each do |handler|
-                if !object.respond_to?(handler)
+                if !object.respond_to?(handler, true)
                   raise Error, "Unable to locate a method called '#{handler}' for an instance of the #{object.class.name} class."
                 end
                 object.__send__(handler)
