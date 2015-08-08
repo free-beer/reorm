@@ -84,6 +84,33 @@ describe Reorm::Model do
     end
   end
 
+  describe "model properties" do
+    subject {
+      SetterTestModel.new(existing_value: 1234)
+    }
+
+    it "makes top level values available as model properties" do
+      expect(subject[:existing_value]).to eq(1234)
+      expect(subject.existing_value).to eq(1234)
+    end
+
+    describe "assignment of a previously non-existent property" do
+      it "assigns the property the specified value" do
+        subject.new_value = "Text."
+        expect(subject[:new_value]).to eq("Text.")
+        expect(subject.new_value).to eq("Text.")
+      end
+    end
+
+    describe "assignment of an existing property" do
+      it "updates the values setting" do
+        subject.existing_value = "Changed!"
+        expect(subject[:existing_value]).to eq("Changed!")
+        expect(subject.existing_value).to eq("Changed!")
+      end
+    end
+  end
+
 	describe "#valid?()" do
 		subject {
 			ValidationTestModel.new

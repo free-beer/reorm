@@ -83,7 +83,7 @@ module Reorm
     end
 
     def respond_to?(method_name, include_private=false)
-      @properties.include?(property_name(method_name)) || super
+      method_name.to_s[-1, 1] == "=" || @properties.include?(property_name(method_name)) || super
     end
 
     def method_missing(method_name, *arguments, &block)
