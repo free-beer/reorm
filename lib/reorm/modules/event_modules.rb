@@ -8,8 +8,7 @@ module Reorm
     @@class_events = {}
   end
 
-  # A module that defines the class level methods for setting event handlers.
-  module EventHandler
+  module SpecifyEventHandlers
     include EventData
 
     def after_create(*methods)
@@ -45,13 +44,18 @@ module Reorm
     end
 
     def store_event_handlers(event, *methods)
-      if self.instance_of?(Class)
-        @@class_events[self] = {} if !@@class_events.include?(self)
-        @@class_events[self][event] = [] if !@@class_events[self].include?(event)
-        @@class_events[self][event] = @@class_events[self][event].concat(methods).uniq
-      else
-        self.class.store_event_handlers(event, *methods)
-      end
+      @@class_events[self] = {} if !@@class_events.include?(self)
+      @@class_events[self][event] = [] if !@@class_events[self].include?(event)
+      @@class_events[self][event] = @@class_events[self][event].concat(methods).uniq
+    end
+  end
+
+  # A module that defines the class level methods for setting event handlers.
+  module EventHandler
+    include EventData
+
+    def EventHandler.included(target)
+      target.extend(SpecifyEventHandlers)
     end
   end
 
@@ -69,7 +73,7 @@ module Reorm
             if handlers.include?(event)
               handlers[event].each do |handler|
                 if !object.respond_to?(handler)
-                  raise Error, "Unable to locate a method called '#{event}' for an instance of the #{object.class.name} class."
+                  raise Error, "Unable to locate a method called '#{handler}' for an instance of the #{object.class.name} class."
                 end
                 object.__send__(handler)
               end
@@ -77,6 +81,10 @@ module Reorm
           end
         end
       end
+    end
+
+    def EventSource.included(target)
+      target.extend(EventSource)
     end
   end
 end
