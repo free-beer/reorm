@@ -4,10 +4,8 @@
 
 module Reorm
   class Model
-    extend EventHandler
-    extend EventSource
-    extend TableBacked
     include EventSource
+    include EventHandler
     include TableBacked
     include Validations
 
