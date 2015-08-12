@@ -73,6 +73,15 @@ module Reorm
       else
         fire_events(events: [:after_save, :after_update])
       end
+      self
+    end
+
+    def update(properties={})
+      properties.each do |field, value|
+        self.__send__(setter_name(field), value)
+      end
+      self.save if !properties.empty?
+      self
     end
 
     def [](property_name)

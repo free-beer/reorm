@@ -232,6 +232,26 @@ describe Reorm::Model do
 		end
 	end
 
+	describe "#update()" do
+		subject {
+			SaveTestModel.new(one: 1, two: 2, three: 3)
+		}
+
+		it "updates the properties for the model object and calls save()" do
+			expect(subject).to receive(:save)
+		  subject.update(one: "One", four: 4)
+		  expect(subject.one).to eq("One")
+		  expect(subject.two).to eq(2)
+		  expect(subject.three).to eq(3)
+		  expect(subject.four).to eq(4)
+		end
+
+		it "does not calls save if the no properties are specified" do
+			expect(subject).not_to receive(:save)
+		  subject.update()
+		end
+	end
+
 	describe "#[]()" do
 		subject {
 			SaveTestModel.new(one: 1, two: "Two")
