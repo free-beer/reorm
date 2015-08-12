@@ -13,14 +13,8 @@ module Reorm
 
     def initialize(properties={})
       @properties = {}
-      properties.each do |key, value|
-        if self.respond_to?(setter_name(key))
-          self.send(setter_name(key), value)
-        else
-          @properties[key.to_sym] = value
-        end
-      end
       @errors     = PropertyErrors.new
+      properties.each {|key, value| set_property(key, value)}
     end
     attr_reader :errors
 
@@ -77,8 +71,8 @@ module Reorm
     end
 
     def update(properties={})
-      properties.each do |field, value|
-        self.__send__(setter_name(field), value)
+      properties.each do |property, value|
+        set_property(property, value)
       end
       self.save if !properties.empty?
       self
@@ -91,6 +85,18 @@ module Reorm
     def []=(property_name, value)
       @properties[property_name.to_sym] = value
       value
+    end
+
+    def has_property?(property)
+      @properties.include?(property_name(property))
+    end
+
+    def get_property(property)
+      has_property?(property) ? self.__send__(property_name(property)) : nil
+    end
+
+    def set_property(property, value)
+      self.__send__(setter_name(property), value)
     end
 
     def respond_to?(method_name, include_private=false)

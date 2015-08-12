@@ -283,6 +283,51 @@ describe Reorm::Model do
 		end
 	end
 
+	describe "#has_property?()" do
+		subject {
+			SaveTestModel.new(one: 1, two: "Two")
+		}
+
+    it "returns true when a model possesses the named property" do
+    	expect(subject.has_property?(:two)).to eq(true)
+    end
+
+    it "returns false when a model does not possess the named property" do
+    	expect(subject.has_property?(:three)).to eq(false)
+    end
+	end
+
+	describe "#get_property()" do
+		subject {
+			SaveTestModel.new(one: 1, two: "Two")
+		}
+
+    it "returns the value of the specified property" do
+    	expect(subject.get_property(:one)).to eq(1)
+    	expect(subject.get_property(:two)).to eq("Two")
+    end
+
+    it "returns nil of a property does not exist" do
+    	expect(subject.get_property(:three)).to be_nil
+    end
+	end
+
+	describe "#set_property()" do
+		subject {
+			SaveTestModel.new(one: 1, two: "Two")
+		}
+
+    it "updates the value of an existing property" do
+    	subject.set_property(:two, 2)
+    	expect(subject.two).to eq(2)
+    end
+
+    it "assigns a value to a property that did not previously exist" do
+    	subject.set_property(:three, 3)
+    	expect(subject.three).to eq(3)
+    end
+	end
+
 	describe "#create()" do
 		let(:standin) {
 			SaveTestModel.new
