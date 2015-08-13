@@ -15,6 +15,10 @@ module Reorm
       store_event_handlers(:after_create, *methods)
     end
 
+    def after_delete(*methods)
+      store_event_handlers(:after_delete, *methods)
+    end
+
     def after_save(*methods)
       store_event_handlers(:after_save, *methods)
     end
@@ -29,6 +33,10 @@ module Reorm
 
     def before_create(*methods)
       store_event_handlers(:before_create, *methods)
+    end
+
+    def before_delete(*methods)
+      store_event_handlers(:before_delete, *methods)
     end
 
     def before_save(*methods)

@@ -211,4 +211,14 @@ describe Reorm::Cursor do
       expect(indices).to eq([5, 4, 3, 2, 1])
     end
   end
+
+  describe "#delete()" do
+    it "deletes all records" do
+      query = CursorTestModel.filter do |record|
+        (record["index"].eq(1) | record["index"].eq(3) | record["index"].eq(5))
+      end
+      query.delete
+      expect(CursorTestModel.all.count).to eq(2)
+    end    
+  end
 end

@@ -78,6 +78,22 @@ module Reorm
       self
     end
 
+    def delete
+      key = get_property(primary_key)
+      if key
+        Reorm.connection do |connection|
+          fire_events(events: [:before_delete])
+          result = r.table(table_name).get(key).delete.run(connection)
+          if result["deleted"] != 1
+            raise Error, "Deletion of record for a #{self.class.name} class instance with a primary key of #{key} failed."
+          end
+          fire_events(events: [:after_delete])
+          set_property(primary_key, nil)
+        end
+      end
+      self
+    end
+
     def [](property_name)
       @properties[property_name.to_sym]
     end
@@ -97,6 +113,14 @@ module Reorm
 
     def set_property(property, value)
       self.__send__(setter_name(property), value)
+      self
+    end
+
+    def set_properties(settings={})
+      settings.each do |property, value|
+        set_property(property, value)
+      end
+      self
     end
 
     def respond_to?(method_name, include_private=false)

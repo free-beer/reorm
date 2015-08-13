@@ -22,9 +22,11 @@ end
 
 class SaveTestModel < Reorm::Model
 	after_create :on_after_create
+  after_delete :on_after_delete
 	after_save :on_after_save
 	after_update :on_after_update
 	before_create :on_before_create
+  before_delete :on_before_delete
 	before_save :on_before_save
 	before_update :on_before_update
 
@@ -42,6 +44,10 @@ class SaveTestModel < Reorm::Model
 		@events << :after_create
 	end
 
+  def on_after_delete
+    @events << :after_delete
+  end
+
 	def on_after_save
 		@events << :after_save
 	end
@@ -53,6 +59,10 @@ class SaveTestModel < Reorm::Model
 	def on_before_create
 		@events << :before_create
 	end
+
+  def on_before_delete
+    @events << :before_delete
+  end
 
 	def on_before_save
 		@events << :before_save
@@ -252,6 +262,35 @@ describe Reorm::Model do
 		end
 	end
 
+  describe "#delete()" do
+    subject {
+      SaveTestModel.create(one: 1, two: 2, three: 3)
+    }
+
+    it "removes the record for the model instance deleted" do
+      id = subject.id
+      subject.delete
+      expect(subject.id).to be_nil
+      expect(SaveTestModel.filter(id: id).count).to eq(0)
+    end
+
+    it "does nothing if the model instance has not been saved" do
+      instance = SaveTestModel.new(one: 1, two: 2, three: 3)
+      expect {
+        instance.delete
+      }.not_to raise_exception
+      subject
+      expect(SaveTestModel.all.count).to eq(1)
+    end
+
+    it "fires the before and after delete events" do
+      instance = SaveTestModel.create(one: 1, two: 2)
+      instance.delete
+      expect(instance.events).to include(:before_delete)
+      expect(instance.events).to include(:after_delete)
+    end
+  end
+
 	describe "#[]()" do
 		subject {
 			SaveTestModel.new(one: 1, two: "Two")
@@ -327,6 +366,28 @@ describe Reorm::Model do
     	expect(subject.three).to eq(3)
     end
 	end
+
+  describe "#set_proerties()" do
+    subject {
+      SaveTestModel.new(one: 1, two: "Two", three: 3)
+    }
+
+    it "updates existing properties" do
+      subject.set_properties(one: "One", two: 2, three: "Three")
+      expect(subject.one).to eq("One")
+      expect(subject.two).to eq(2)
+      expect(subject.three).to eq("Three")
+    end
+
+    it "assigns properties that had not been previously set" do
+      subject.set_properties(four: 4, five: "Five")
+      expect(subject.one).to eq(1)
+      expect(subject.two).to eq("Two")
+      expect(subject.three).to eq(3)
+      expect(subject.four).to eq(4)
+      expect(subject.five).to eq("Five")
+    end
+  end
 
 	describe "#create()" do
 		let(:standin) {

@@ -22,8 +22,12 @@ module Reorm
     end
     alias :reset :close
 
-    def filter(predicate)
-      Cursor.new(model_class, @query.filter(predicate), @order_by)
+    def filter(predicate=nil, &block)
+      if predicate.nil?
+        Cursor.new(model_class, @query.filter(&block), @order_by)
+      else
+        Cursor.new(model_class, @query.filter(predicate), @order_by)
+      end
     end
 
     def count
@@ -111,6 +115,12 @@ module Reorm
 
     def order_by(*arguments)
       Cursor.new(model_class, @query, arguments)
+    end
+
+    def delete
+      Reorm.connection do |connection|
+        @query.delete.run(connection)
+      end
     end
 
   private
