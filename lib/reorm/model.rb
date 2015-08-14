@@ -150,7 +150,7 @@ module Reorm
       {}.merge(@properties)
     end
 
-    def self.for(id)
+    def self.get(id)
       model = nil
       Reorm.connection do |connection|
         if table_exists?(table_name, connection)
