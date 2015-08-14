@@ -100,7 +100,7 @@ module Reorm
       Cursor.new(model_class, @query.limit(size), @order_by)
     end
 
-    def offset(index)
+    def offset(quantity)
       Cursor.new(model_class, @query.skip(quantity), @order_by)
     end
     alias :skip :offset

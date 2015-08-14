@@ -221,4 +221,18 @@ describe Reorm::Cursor do
       expect(CursorTestModel.all.count).to eq(2)
     end    
   end
+
+  describe "#offset()" do
+    it "moves the starting point for records retrieved" do
+      expect(subject.count).to eq(5)
+      expect(subject.offset(2).count).to eq(3)
+    end
+  end
+
+  describe "#limit()" do
+    it "restricts the number of records to be retrieved" do
+      expect(subject.count).to eq(5)
+      expect(subject.limit(2).count).to eq(2)
+    end
+  end
 end
