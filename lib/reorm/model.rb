@@ -123,6 +123,13 @@ module Reorm
       self
     end
 
+    def assign_properties(properties={})
+      properties.each do |key, value|
+        @properties[key.to_sym] = value
+      end
+      self
+    end
+
     def respond_to?(method_name, include_private=false)
       method_name.to_s[-1, 1] == "=" || @properties.include?(property_name(method_name)) || super
     end
@@ -141,6 +148,20 @@ module Reorm
 
     def to_h
       {}.merge(@properties)
+    end
+
+    def self.for(id)
+      model = nil
+      Reorm.connection do |connection|
+        if table_exists?(table_name, connection)
+          properties = r.table(table_name).get(id).run(connection)
+          if !properties.nil?
+            model = self.new
+            model.assign_properties(properties)
+          end
+        end
+      end
+      model
     end
 
     def self.create(properties={})
@@ -172,10 +193,17 @@ module Reorm
     end
 
     def ensure_table_exists(connection)
-      tables = r.table_list.run(connection)
-      if !tables.include?(table_name)
+      if !table_exists?(table_name, connection)
         r.table_create(table_name, primary_key: primary_key).run(connection)
       end
+    end
+
+    def table_exists?(name, connection)
+      Model.table_exists?(name, connection)
+    end
+
+    def self.table_exists?(name, connection)
+      r.table_list.run(connection).include?(name)
     end
   end
 end

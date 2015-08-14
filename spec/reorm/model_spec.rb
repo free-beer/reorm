@@ -389,6 +389,35 @@ describe Reorm::Model do
     end
   end
 
+  describe "#assign_properties()" do
+    subject {
+      SetterTestModel.new
+    }
+
+    it "assigns model properties but bypasses explicit assignment methods" do
+      subject.assign_properties(value: "Value.")
+      expect(subject.value).to eq("Value.")
+      expect(subject.called).to be_nil
+    end
+  end
+
+  describe "#for()" do
+    let(:model) {
+      SaveTestModel.create(one: 1)
+    }
+
+    it "returns a model instance that matches the key if one exists" do
+      object = SaveTestModel.for(model.id)
+      expect(object).not_to be_nil
+      expect(object.id).to eq(model.id)
+      expect(object.one).to eq(1)
+    end
+
+    it "returns nil if a match record could not be found" do
+      expect(SaveTestModel.for(SecureRandom.uuid)).to be_nil
+    end
+  end
+
 	describe "#create()" do
 		let(:standin) {
 			SaveTestModel.new

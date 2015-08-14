@@ -60,7 +60,7 @@ module Reorm
       end
       data    = @order_by.nil? ? @cursor.next : @cursor[@offset]
       @offset += 1
-      model_class.new(data)
+      model_for(data)
     end
 
     def each(&block)
@@ -78,7 +78,7 @@ module Reorm
       model = nil
       if offset >= 0 && offset < count
         Reorm.connection do |connection|
-          model = model_class.new(@query.nth(offset).run(connection))
+          model = model_for(@query.nth(offset).run(connection))
         end
       end
       model
@@ -151,7 +151,7 @@ module Reorm
     def each_with_order_by
       Reorm.connection do |connection|
         @query.order_by(*@order_by).run(connection).each do |record|
-          yield model_class.new(record)
+          yield model_for(record)
         end
       end
     end
@@ -161,12 +161,18 @@ module Reorm
         cursor = @query.run(connection)
         begin
           cursor.each do |record|
-            yield model_class.new(record)
+            yield model_for(record)
           end
         ensure
           cursor.close
         end
       end
+    end
+
+    def model_for(properties)
+      model = model_class.new
+      model.assign_properties(properties)
+      model
     end
   end
 end
